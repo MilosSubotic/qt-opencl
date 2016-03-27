@@ -3,7 +3,7 @@ LIBS += -lQtOpenCL
 macx:!opencl_configure {
     LIBS += -framework OpenCL
 }
-win32 {
+win32|unix {
     !isEmpty(QMAKE_INCDIR_OPENCL) {
 		INCLUDEPATH += $$QMAKE_INCDIR_OPENCL
     }
