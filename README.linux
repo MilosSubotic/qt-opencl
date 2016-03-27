@@ -1,0 +1,37 @@
+README.linux
+------------
+
+
+Ubuntu 14 AMD platform prerequisites
+------------
+
+# Install headers:
+sudo apt-get install linux-headers-$(uname -r)
+# Install AMD driver and OpenCL libraries:
+sudo apt-get install fglrx-updates
+sudo amdconfig --initial
+# Check AMD driver:
+fglrxinfo
+# Install OpenCL headers
+sudo apt-get install opencl-headers
+# Install Qt4 stuff:
+sudo apt-get install qt4-default libqt4-dev qtchooser qt4-designer
+
+
+Building
+------------
+
+# Go one directory back from qt-opencl project directory:
+cd ..
+# Make separate build directory:
+mkdir build_qt-opencl
+# Go to build directory:
+cd build_qt-opencl
+# Configure:
+qmake-qt4 ../qt-opencl/opencl.pro
+# Build:
+make
+# Test:
+LD_LIBRARY_PATH=lib ./examples/opencl/imagedrawing/imagedrawing
+
+
