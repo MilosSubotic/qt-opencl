@@ -10,4 +10,5 @@ HEADERS += colorizewidget.h
 RESOURCES += colorize.qrc
 
 LIBS += -L../../../lib -L../../../bin
+DESTDIR = ../../../bin
 include(../../../src/opencl/opencl_dep.pri)

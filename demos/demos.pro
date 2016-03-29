@@ -1,3 +1,2 @@
 TEMPLATE = subdirs
-#SUBDIRS = mandelbrot bezierpatch
-SUBDIRS = bezierpatch
+SUBDIRS = mandelbrot bezierpatch

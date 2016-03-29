@@ -10,4 +10,5 @@ HEADERS += pathwidget.h
 RESOURCES += pathdrawing.qrc
 
 LIBS += -L../../../lib -L../../../bin
+DESTDIR = ../../../bin
 include(../../../src/opencl/opencl_dep.pri)
