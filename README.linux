@@ -38,8 +38,10 @@ cd build_qt-opencl
 # Configure:
 qmake-qt4 ../qt-opencl/opencl.pro
 # Build:
-make
-# Test:
-LD_LIBRARY_PATH=lib ./examples/opencl/imagedrawing/imagedrawing
+make -j4
+# Test QtOpenCL:
+./bin/blur
+# Test QtOpenCLGL:
+./bin/mandelbrot
 
 
