@@ -10,13 +10,21 @@ sudo apt-get install linux-headers-$(uname -r)
 # Install AMD driver and OpenCL libraries:
 sudo apt-get install fglrx-updates
 sudo amdconfig --initial
+# If appropriate link to OpenCL library doesn't exist make it:
+sudo ln -s /usr/lib/libOpenCL.so.1 /usr/lib/libOpenCL.so
+sudo ldconfig
+# Restart computer:
+sudo shutdown -r now
 # Check AMD driver:
 fglrxinfo
-# Install OpenCL headers
+# Install OpenCL headers:
 sudo apt-get install opencl-headers
+# Install g++:
+sudo apt-get install g++
 # Install Qt4 stuff:
 sudo apt-get install qt4-default libqt4-dev qtchooser qt4-designer
-
+# Install git:
+sudo apt-get install git
 
 Building
 ------------
