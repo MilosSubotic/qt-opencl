@@ -16,3 +16,6 @@ win32|unix {
         LIBS += -lOpenCL
     }
 }
+unix:{
+    QMAKE_LFLAGS += "-Wl,-rpath,\'\$$ORIGIN/../lib\'"
+}
