@@ -5,13 +5,14 @@ README.linux
 Ubuntu 14 AMD platform prerequisites
 ------------
 
-# Install headers:
-sudo apt-get install linux-headers-$(uname -r)
 # Install AMD driver and OpenCL libraries:
 sudo apt-get install fglrx-updates
 sudo amdconfig --initial
-# If appropriate link to OpenCL library doesn't exist make it:
+# Make next links, if they do not exist:
 sudo ln -s /usr/lib/libOpenCL.so.1 /usr/lib/libOpenCL.so
+sudo ln -s /usr/lib/fglrx/libGL.so.1 /usr/lib/fglrx/libGL.so
+sudo ln -sf /usr/lib/fglrx/libGL.so /usr/lib/x86_64-linux-gnu/libGL.so
+# Update libarary
 sudo ldconfig
 # Restart computer:
 sudo shutdown -r now
@@ -42,6 +43,6 @@ make -j4
 # Test QtOpenCL:
 ./bin/blur
 # Test QtOpenCLGL:
-./bin/mandelbrot
+./bin/mandelbrot -opengl
 
 
