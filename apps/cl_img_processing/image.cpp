@@ -40,7 +40,6 @@
 ****************************************************************************/
 
 #include "image.h"
-#include "imagenative.h"
 #include "imagecl.h"
 #include "palette.h"
 #include <QtCore/qdatetime.h>
@@ -67,8 +66,5 @@ void Image::setRegion(qreal centerx, qreal centery, qreal diameterx)
 
 Image *Image::createImage(int width, int height)
 {
-    if (ImageCL::hasOpenCL())
-        return new ImageCL(width, height);
-    else
-        return new ImageNative(width, height);
+    return new ImageCL(width, height);
 }

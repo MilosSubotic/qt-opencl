@@ -13,7 +13,6 @@ SOURCES += main.cpp \
            framerate.cpp \
            image.cpp \
            imagecl.cpp \
-           imagenative.cpp \
            view.cpp \
            viewgl.cpp \
            cltexture2d.cpp \
@@ -22,7 +21,6 @@ HEADERS += palette.h \
            framerate.h \
            image.h \
            imagecl.h \
-           imagenative.h \
            view.h \
            viewgl.h \
            cltexture2d.h \

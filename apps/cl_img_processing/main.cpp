@@ -48,8 +48,29 @@
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
-    ViewGL view;
-    view.resize(768, 512);
-    view.show();
-    return app.exec();
+
+    bool glView = true; // OpenGL view by default.
+
+    if (!ImageCL::hasOpenCL()) {
+        qWarning() << "Platform does not have OpenCL! Exiting...";
+        return -1;
+    }
+    if (QApplication::arguments().contains(QLatin1String("-no-gl"))) {
+        glView = false;
+        qDebug() << "OpenGL turned off by user...";
+    }
+
+    if (glView) {
+        qDebug() << "Starting GL view...";
+        ViewGL view;
+        view.resize(768, 512);
+        view.show();
+        return app.exec();
+    } else {
+        qDebug() << "Starting ordinary view...";
+        View view;
+        view.resize(768, 512);
+        view.show();
+        return app.exec();
+    }
 }
