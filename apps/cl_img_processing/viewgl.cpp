@@ -40,7 +40,7 @@
 ****************************************************************************/
 
 #include "viewgl.h"
-#include "image.h"
+#include "imagepaint.h"
 #include "palette.h"
 #include "zoom.h"
 #include <QtGui/qpainter.h>
@@ -68,6 +68,7 @@ ViewGL::ViewGL(QWidget *parent)
     zoom = new GoldenGradientZoom();
 
     image = 0;
+    textureId = 0;
 
     timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(animate()));
@@ -223,20 +224,8 @@ void ViewGL::animate()
 {
     if (!image)
         return;
-    if (step > 0) {
-        offset += step;
-        if (offset >= 1.0f) {
-            offset = 1.0f;
-            step = -step;
-        }
-    } else {
-        offset += step;
-        if (offset <= 0.0f) {
-            offset = 0.0f;
-            step = -step;
-        }
-    }
-    zoom->generate(image, offset, *palette);
+
+    image->generate();
     updateGL();
     frameRate.newFrame();
 }

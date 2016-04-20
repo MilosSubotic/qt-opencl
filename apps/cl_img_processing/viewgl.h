@@ -45,7 +45,7 @@
 #include <QtOpenGL/qgl.h>
 #include "framerate.h"
 
-class Image;
+class ImagePaint;
 class Palette;
 class Zoom;
 class QTimer;
@@ -71,7 +71,7 @@ protected:
 
 private:
     QTimer *timer;
-    Image *image;
+    ImagePaint *image;
     Palette *palette;
     qreal offset;
     qreal step;

@@ -11,7 +11,6 @@ INCLUDEPATH += .
 SOURCES += main.cpp \
            palette.cpp \
            framerate.cpp \
-           image.cpp \
            imagecl.cpp \
            view.cpp \
            viewgl.cpp \
@@ -19,7 +18,7 @@ SOURCES += main.cpp \
            zoom.cpp
 HEADERS += palette.h \
            framerate.h \
-           image.h \
+           imagepaint.h \
            imagecl.h \
            view.h \
            viewgl.h \

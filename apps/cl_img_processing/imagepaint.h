@@ -39,32 +39,27 @@
 **
 ****************************************************************************/
 
-#include "image.h"
-#include "imagecl.h"
-#include "palette.h"
-#include <QtCore/qdatetime.h>
-#include <QtCore/qdebug.h>
+#ifndef IMAGE_H
+#define IMAGE_H
 
-Image::Image(int width, int height)
-    : wid(width), ht(height)
-{
-    setRegion(-0.7f, 0.0f, 3.0769f);
-}
+#include <QtGui/qimage.h>
+#include <QtOpenGL/qgl.h>
 
-Image::~Image()
-{
-}
+class QPainter;
 
-// Set a region based on its center and diameter in the x direction.
-void Image::setRegion(qreal centerx, qreal centery, qreal diameterx)
+class ImagePaint
 {
-    qreal diametery = diameterx * ht / wid;
-    rgn = QRectF(centerx - diameterx * 0.5f,
-                 centery - diametery * 0.5f,
-                 diameterx, diametery);
-}
+public:
+    virtual ~ImagePaint(){}
 
-Image *Image::createImage(int width, int height)
-{
-    return new ImageCL(width, height);
-}
+    virtual GLuint textureId() = 0;
+    virtual void initialize() = 0;
+
+    virtual QSize size() const = 0;
+
+    virtual void generate() = 0;
+    virtual void paint(QPainter *painter, const QPoint& point) = 0;
+
+};
+
+#endif

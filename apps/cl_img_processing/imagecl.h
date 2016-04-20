@@ -42,11 +42,11 @@
 #ifndef IMAGECL_H
 #define IMAGECL_H
 
-#include "image.h"
+#include "imagepaint.h"
 #include "qclcontextgl.h"
 #include "cltexture2d.h"
 
-class ImageCL : public Image
+class ImageCL : public ImagePaint
 {
 public:
     ImageCL(int width, int height);
@@ -55,13 +55,16 @@ public:
     virtual GLuint textureId();
     virtual void initialize();
 
+    virtual QSize size() const;
+
     static bool hasOpenCL();
     static void disableCL();
 
-    virtual void generate(int maxIterations, const Palette &palette);
+    virtual void generate();
     virtual void paint(QPainter *painter, const QPoint& point);
 
 protected:
+    int width, height;
     QImage img;
     QCLImage2D imageBuffer;
     CLTexture2D textureBuffer;

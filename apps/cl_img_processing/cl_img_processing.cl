@@ -39,44 +39,19 @@
 **
 ****************************************************************************/
 
-__kernel void mandelbrot(__write_only image2d_t image,
-                         const float regionx, const float regiony,
-                         const float regionwidth, const float regionheight,
-                         const int pixelwidth, const int pixelheight,
-                         const int maxIterations,
-                         __global __read_only float4 *colors)
-{
-    int xpixel = get_global_id(0);
-    int ypixel = get_global_id(1);
-    float xin = regionx + xpixel * regionwidth / pixelwidth;
-    float yin = regiony + (pixelheight - 1 - ypixel) * regionheight / pixelheight;
-    int iteration = 0;
-    float x = 0;
-    float y = 0;
-    while (iteration < maxIterations) {
-        float x2 = x * x;
-        float y2 = y * y;
-        if ((x2 + y2) > 4.0)
-            break;
-        float xtemp = x2 - y2 + xin;
-        y = 2 * x * y + yin;
-        x = xtemp;
-        ++iteration;
-    }
-    int2 pos = (int2)(xpixel, ypixel);
-    if (iteration < (maxIterations - 1)) {
-        // Use the Normalized Iteration Count Algorithm
-        // to compute an interpolation value between two
-        // adjacent colors for a continuous tone image.
-        // From: http://math.unipa.it/~grim/Jbarrallo.PDF
-        const float loglogb = log(log(2.0f));
-        const float invlog2 = 1.0f / log(2.0f);
-        float v = (loglogb - log(log(sqrt(x * x + y * y)))) * invlog2;
-        float4 color = mix(colors[iteration], colors[iteration + 1], v);
-        write_imagef(image, pos, color);
-    } else if (iteration < maxIterations) {
-        write_imagef(image, pos, colors[iteration]);
-    } else {
-        write_imagef(image, pos, (float4)(0, 0, 0, 1));
-    }
+__kernel void main(
+	__write_only image2d_t out_tex_img
+) {
+	int x_pixel = get_global_id(0);
+	int y_pixel = get_global_id(1);
+    
+	int2 pos = (int2)(x_pixel, y_pixel);
+	float4 color;
+	if(x_pixel < (get_global_size(0) >> 1)) {
+		color = (float4)(0.0, 0.0, 1.0, 1.0);
+	}else{
+		color = (float4)(0.0, 1.0, 0.0, 1.0);
+	}
+	write_imagef(out_tex_img, pos, color);
 }
+

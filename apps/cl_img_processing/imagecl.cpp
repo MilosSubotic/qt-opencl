@@ -80,7 +80,7 @@ void ImageCLContext::buildProgram(const QString& cl_source_file,
         int width, int height)
 {
     program = context->buildProgramFromSourceFile(cl_source_file);
-    kernel = program.createKernel("mandelbrot");
+    kernel = program.createKernel("main");
     kernel.setGlobalWorkSize(width, height);
     kernel.setLocalWorkSize(kernel.bestLocalWorkSizeImage2D());
 }
@@ -93,7 +93,7 @@ ImageCLContext::~ImageCLContext()
 Q_GLOBAL_STATIC(ImageCLContext, image_context)
 
 ImageCL::ImageCL(int width, int height)
-    : Image(width, height)
+    : width(width), height(height)
     , img(width, height, QImage::Format_RGB32)
     , lastIterations(-1)
     , initialized(false)
@@ -120,11 +120,12 @@ GLuint ImageCL::textureId()
     init(true);
 
     ImageCLContext *ctx = image_context();
-    if (!textureBuffer.create(ctx->glContext, wid, ht))
+    if (!textureBuffer.create(ctx->glContext, width, height))
         qWarning("Could not create the OpenCL texture to render into.");
 
+    // FIXME Hardcoded.
     ctx->buildProgram("./apps/cl_img_processing/cl_img_processing.cl",
-            wid, ht);
+            width, height);
 
     return textureBuffer.textureId();
 }
@@ -133,6 +134,8 @@ void ImageCL::initialize()
 {
     init(false);
 }
+
+QSize ImageCL::size() const { return QSize(width, height); }
 
 static bool openclDisabled = false;
 
@@ -148,48 +151,22 @@ void ImageCL::disableCL()
     openclDisabled = true;
 }
 
-void ImageCL::generate(int maxIterations, const Palette &palette)
+void ImageCL::generate()
 {
-    QRectF region = rgn;
-
     init();
 
     ImageCLContext *ctx = image_context();
     QCLKernel kernel = ctx->kernel;
 
-    // Upload the color table into a buffer in the device.
-    if (colorBuffer.isNull() || lastIterations != maxIterations) {
-        QVector<QRgb> colors = palette.createTable(maxIterations);
-        if (lastIterations != maxIterations)
-            colorBuffer = QCLBuffer();
-        if (colorBuffer.isNull()) {
-            colorBuffer = ctx->context->createBufferDevice
-                (maxIterations * sizeof(float) * 4, QCLMemoryObject::ReadOnly);
-        }
-        QVarLengthArray<float> floatColors;
-        for (int index = 0; index < maxIterations; ++index) {
-            QColor color(colors[index]);
-            floatColors.append(float(color.redF()));
-            floatColors.append(float(color.greenF()));
-            floatColors.append(float(color.blueF()));
-            floatColors.append(float(color.alphaF()));
-        }
-        colorBuffer.write(floatColors.constData(),
-                          maxIterations * sizeof(float) * 4);
-        lastIterations = maxIterations;
-    }
-
     if (!textureBuffer.textureId()) {
         // Create a buffer for the image in the OpenCL device.
         if (imageBuffer.isNull()) {
             imageBuffer = ctx->context->createImage2DDevice
-                (QImage::Format_RGB32, QSize(wid, ht), QCLMemoryObject::WriteOnly);
+                (QImage::Format_RGB32, size(), QCLMemoryObject::WriteOnly);
         }
 
-        // Execute the "mandelbrot" kernel.
-        kernel(imageBuffer, float(region.x()), float(region.y()),
-                   float(region.width()), float(region.height()),
-                   wid, ht, maxIterations, colorBuffer);
+        // Execute the kernel.
+        kernel(imageBuffer);
     } else {
         // Finish previous GL operations on the texture.
         if (ctx->glContext->supportsObjectSharing())
@@ -198,10 +175,8 @@ void ImageCL::generate(int maxIterations, const Palette &palette)
         // Acquire the GL texture object.
         textureBuffer.acquire();
 
-        // Execute the "mandelbrot" kernel.
-        kernel(textureBuffer, float(region.x()), float(region.y()),
-                   float(region.width()), float(region.height()),
-                   wid, ht, maxIterations, colorBuffer);
+        // Execute the kernel.
+        kernel(textureBuffer);
 
         // Release the GL texture object and wait for it complete.
         // After the release is complete, the texture can be used by GL.
