@@ -286,6 +286,8 @@ QList<QCLDevice> QCLContext::devices() const
             QVarLengthArray<cl_device_id> buf(size);
             if (clGetContextInfo(d->id, CL_CONTEXT_DEVICES,
                                  size, buf.data(), 0) == CL_SUCCESS) {
+                // FIXME Hard-coded to avoid bug with non-existing contexts.
+                size = 2;
                 for (size_t index = 0; index < size; ++index)
                     devs.append(QCLDevice(buf[index]));
             }
