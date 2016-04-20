@@ -41,8 +41,8 @@
 
 #include "viewgl.h"
 #include "imagepaint.h"
+#include "imagecl.h"
 #include "palette.h"
-#include "zoom.h"
 #include <QtGui/qpainter.h>
 #include <QtGui/qevent.h>
 #include <QtCore/qtimer.h>
@@ -65,8 +65,6 @@ ViewGL::ViewGL(QWidget *parent)
     offset = 0.0f;
     step = 0.005f;
 
-    zoom = new GoldenGradientZoom();
-
     image = 0;
     textureId = 0;
 
@@ -87,7 +85,6 @@ ViewGL::~ViewGL()
 {
     delete palette;
     delete image;
-    delete zoom;
 }
 
 void ViewGL::resizeGL(int width, int height)
@@ -101,7 +98,7 @@ void ViewGL::initializeGL()
         int wid = (width() + 15) & ~15;
         int ht = (height() + 15) & ~15;
 
-        image = Image::createImage(wid, ht);
+        image = new ImageCL(wid, ht);
         textureId = image->textureId();
     }
 
@@ -239,7 +236,7 @@ void ViewGL::performResize()
 
     if (!image || image->size() != QSize(wid, ht)) {
         delete image;
-        image = Image::createImage(wid, ht);
+        image = new ImageCL(wid, ht);
         textureId = image->textureId();
 
         frameRate.start();

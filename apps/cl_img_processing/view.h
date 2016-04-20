@@ -47,7 +47,6 @@
 
 class ImagePaint;
 class Palette;
-class Zoom;
 class QTimer;
 
 class View : public QWidget
@@ -72,7 +71,6 @@ private:
     Palette *palette;
     qreal offset;
     qreal step;
-    Zoom *zoom;
     FrameRate frameRate;
     QTimer *resizeTimer;
     bool firstResize;

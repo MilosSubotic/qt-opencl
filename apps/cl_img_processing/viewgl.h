@@ -47,7 +47,6 @@
 
 class ImagePaint;
 class Palette;
-class Zoom;
 class QTimer;
 class QGLShaderProgram;
 
@@ -76,7 +75,6 @@ private:
     qreal offset;
     qreal step;
     GLuint textureId;
-    Zoom *zoom;
     FrameRate frameRate;
     QGLShaderProgram *program;
     QTimer *resizeTimer;

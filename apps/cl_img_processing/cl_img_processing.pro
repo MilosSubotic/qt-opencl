@@ -14,8 +14,7 @@ SOURCES += main.cpp \
            imagecl.cpp \
            view.cpp \
            viewgl.cpp \
-           cltexture2d.cpp \
-           zoom.cpp
+           cltexture2d.cpp
 HEADERS += palette.h \
            framerate.h \
            imagepaint.h \
@@ -23,8 +22,7 @@ HEADERS += palette.h \
            view.h \
            viewgl.h \
            cltexture2d.h \
-           glproxy.h \
-           zoom.h
+           glproxy.h
 
 LIBS += -L../../lib -L../../bin
 DESTDIR = ../../bin

@@ -41,8 +41,8 @@
 
 #include "view.h"
 #include "imagepaint.h"
+#include "imagecl.h"
 #include "palette.h"
-#include "zoom.h"
 #include <QtGui/qpainter.h>
 #include <QtGui/qevent.h>
 #include <QtCore/qtimer.h>
@@ -56,8 +56,6 @@ View::View(QWidget *parent)
     palette->setStandardPalette(Palette::EarthSky);
     offset = 0.0f;
     step = 0.005f;
-
-    zoom = new GoldenGradientZoom();
 
     image = 0;
 
@@ -76,7 +74,6 @@ View::~View()
 {
     delete palette;
     delete image;
-    delete zoom;
 }
 
 void View::paintEvent(QPaintEvent *)
@@ -139,7 +136,7 @@ void View::performResize()
 
     if (!image || image->size() != QSize(wid, ht)) {
         delete image;
-        image = Image::createImage(wid, ht);
+        image = new ImageCL(wid, ht);
         image->initialize();
 
         frameRate.start();
