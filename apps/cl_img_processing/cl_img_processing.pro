@@ -26,7 +26,6 @@ HEADERS += palette.h \
            cltexture2d.h \
            glproxy.h \
            zoom.h
-RESOURCES += cl_img_processing.qrc
 
 LIBS += -L../../lib -L../../bin
 DESTDIR = ../../bin

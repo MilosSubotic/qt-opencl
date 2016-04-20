@@ -50,18 +50,18 @@ public:
     ImageCLContext() : context(0), glContext(0) {}
     ~ImageCLContext();
 
-    void init(bool useGL, int wid, int ht);
+    void init(bool useGL);
+    void buildProgram(const QString& cl_source_file, int width, int height);
 
     QCLContext *context;
     QCLContextGL *glContext;
     QCLProgram program;
-    QCLKernel mandelbrot;
+    QCLKernel kernel;
 };
 
-void ImageCLContext::init(bool useGL, int wid, int ht)
+void ImageCLContext::init(bool useGL)
 {
     if (context) {
-        mandelbrot.setGlobalWorkSize(wid, ht);
         return;
     }
 
@@ -75,12 +75,14 @@ void ImageCLContext::init(bool useGL, int wid, int ht)
         if (!context->create())
             return;
     }
-
-    program = context->buildProgramFromSourceFile
-        (QLatin1String(":/cl_img_processing.cl"));
-    mandelbrot = program.createKernel("mandelbrot");
-    mandelbrot.setGlobalWorkSize(wid, ht);
-    mandelbrot.setLocalWorkSize(mandelbrot.bestLocalWorkSizeImage2D());
+}
+void ImageCLContext::buildProgram(const QString& cl_source_file,
+        int width, int height)
+{
+    program = context->buildProgramFromSourceFile(cl_source_file);
+    kernel = program.createKernel("mandelbrot");
+    kernel.setGlobalWorkSize(width, height);
+    kernel.setLocalWorkSize(kernel.bestLocalWorkSizeImage2D());
 }
 
 ImageCLContext::~ImageCLContext()
@@ -110,7 +112,7 @@ void ImageCL::init(bool useGL)
 
     // Initialize the context for GL or non-GL.
     ImageCLContext *ctx = image_context();
-    ctx->init(useGL, wid, ht);
+    ctx->init(useGL);
 }
 
 GLuint ImageCL::textureId()
@@ -120,6 +122,9 @@ GLuint ImageCL::textureId()
     ImageCLContext *ctx = image_context();
     if (!textureBuffer.create(ctx->glContext, wid, ht))
         qWarning("Could not create the OpenCL texture to render into.");
+
+    ctx->buildProgram("./apps/cl_img_processing/cl_img_processing.cl",
+            wid, ht);
 
     return textureBuffer.textureId();
 }
@@ -150,7 +155,7 @@ void ImageCL::generate(int maxIterations, const Palette &palette)
     init();
 
     ImageCLContext *ctx = image_context();
-    QCLKernel mandelbrot = ctx->mandelbrot;
+    QCLKernel kernel = ctx->kernel;
 
     // Upload the color table into a buffer in the device.
     if (colorBuffer.isNull() || lastIterations != maxIterations) {
@@ -182,7 +187,7 @@ void ImageCL::generate(int maxIterations, const Palette &palette)
         }
 
         // Execute the "mandelbrot" kernel.
-        mandelbrot(imageBuffer, float(region.x()), float(region.y()),
+        kernel(imageBuffer, float(region.x()), float(region.y()),
                    float(region.width()), float(region.height()),
                    wid, ht, maxIterations, colorBuffer);
     } else {
@@ -194,7 +199,7 @@ void ImageCL::generate(int maxIterations, const Palette &palette)
         textureBuffer.acquire();
 
         // Execute the "mandelbrot" kernel.
-        mandelbrot(textureBuffer, float(region.x()), float(region.y()),
+        kernel(textureBuffer, float(region.x()), float(region.y()),
                    float(region.width()), float(region.height()),
                    wid, ht, maxIterations, colorBuffer);
 

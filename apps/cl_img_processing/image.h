@@ -50,8 +50,10 @@ class QPainter;
 
 class Image
 {
-public:
+protected:
     Image(int width, int height);
+
+public:
     virtual ~Image();
 
     virtual GLuint textureId() { return 0; }
